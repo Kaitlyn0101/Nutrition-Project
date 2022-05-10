@@ -1,0 +1,256 @@
+---
+title: 'Nutrition Data Cholesterol Analysis '
+author: "Kaitlyn Watson, Sky Payumo, Radhika Talreja"
+date: "12/10/2021"
+output:
+  html_document: null
+  css: style.css
+  
+---
+
+/* Table of contents */
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #F2B800;
+    border-color: #337ab7;
+    
+```{r setup, include=FALSE}
+library(tidyverse)
+library(infer)
+library(ggplot2)
+library(MASS)
+library(tidyverse)
+library(broom)
+load("NutritionStudy.rda")
+```
+
+<style type="text/css">
+/* Title */
+h1.title {
+  color: #3C98E5;
+  font-size:60px;
+  font-weight: bold;
+}
+/* Level 1 header */
+h1 {
+  color: #3C98E5;
+  font-weight: bold;
+}
+/* Level 2 header */
+h2 {
+  color: #3C98E5;
+  font-weight: bold;
+}
+/* Level 4 header */
+h4 {
+  color: #000000;
+  font-weight: bold;
+}
+/* Table of contents */
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #F2B800;
+    border-color: #337ab7;
+}
+/* Navigation pills */
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    color: #fff;
+    background-color: #F2B800;
+}
+</style> 
+
+
+**Table of Contents**|
+---------------|---------------------------
+Introduction|
+Research Aims|
+Methods| 
+Results|
+Conclusion|
+
+#INTRODUCTION
+As a group, we have decided to create a project based on the nutrition data provided from Central Michigan University. After examining some of the data we have composed one overall motivating question that we intend to address through this project: How is cholesterol intake related to different types of dietary habits? To further expand on this research question we broke it down into two additional questions which are as follows:
+
+1. Does a higher level of fat result in a higher level of cholesterol?
+2. How is cholesterol affected by Fat, Fiber, Calorie Consumption, and Gender
+
+
+#RESEARCH AIMS
+Overall, we expect to learn how closely related certain factors of nutrition are to each other using visualization and data analysis techniques. More specifically , we expect to learn how cholesterol levels are affected using fiber, calorie intake, gender, and fat. Additionally, we hope to learn more coding techniques as we work through the research questions and expand our coding knowledge. We anticipate to find that cholesterol has a high correlation to several of these nutrtion factors. 
+
+
+#METHODS 
+
+For our first question, we intend to perform simple linear regression and evaluate the R squared value to determine the correlation between fat and cholesterol. 
+
+Our next method will be multiple linear regression using backwards tracing to find our best fit model for the variables of fat, fiber, calories, and gender. We will compare this R squared value to the one found in the simple linear regression from question 1. 
+
+
+#RESULTS 
+
+RESEARCH QUESTION 1:
+
+Does a higher level of fat result in a higher level of cholesterol?
+
+After performing simple linear regression, our R squared value resulted in 0.504. Therefore, 50.4% of the variation in cholesterol can be explained by fat. Our correlation coefficient is 0.710 which shows that fat and cholesterol are highly correlated. This conclusion supports our first research question. 
+
+In figure 1, we generated a scatter plot to visualize the initial correlation between fat and cholesterol before performing the linear regression. The graph provides a moderately strong positive linear correlation. We then performed the linear regression and found that for every unit of fat there is a 2.770 increase in cholesterol. Additionally, if there was 0 fat, the cholesterol level would be 29.109 (see Table 1). Finally, in table 2 we generated our R-squared and adjusted R squared values which are interpreted in the paragraph above. 
+
+```{r, echo=FALSE}
+NutritionStudy%>%
+ ggplot(mapping=aes(x=Fat, y=Cholesterol))+
+   geom_point()+
+   geom_jitter()
+```
+Figure 1 
+ 
+```{r, echo=FALSE}
+nut.fit <- lm(formula = Cholesterol~ Fat, data = NutritionStudy)
+
+nut.fit %>%
+  broom::tidy()
+
+```
+
+Table 1 
+Cholesterol=29.109 + 2.770 x Fat
+
+```{r, echo=FALSE}
+#nut.fit%>%
+  #augment() %>%
+  #ggplot(mapping = aes(x = Fat, y = Cholesterol)) +
+  #geom_point() +
+  #geom_hline(yintercept = 29.109227, color = "pink") +
+  #labs(x = "Fat", y = "Cholesterol")
+  
+nut.fit %>% 
+ glance()  
+
+```
+
+Table 2
+
+RESEARCH QUESTION 2
+
+How is cholesterol correlated to predictors such as fat,calories, fiber, gender?
+
+For the second research question, we came to the conclusion that 53.1% of the variability in cholesterol can be explained by the predictors in our best fit regression equation. This also is in support of our main research question indicating that cholesterol is highly correlated even with multiple predictors. 
+
+We began by generating all four scatter plots for our possible predictors (see figure 2-5). Based on the scatter plots, we hypothesize that calories and fat will have a moderately strong positive linear correlation, fiber will have a weak positive linear correlation, and gender will have a low correlation. We also generated a box plot for gender in order to have a clearer visualization (figure 6). 
+
+Next, we generated a linear regression using all of the predictors as seen in Table 3. We also generated the R-squared values in Table 4. Gender and fiber appear to have the smallest significance to the regression line. Since gender is a factor variable, we decided to re-level gender which would establish the baseline as Male to see if the significance level of that predictor and overall R squared value would change. After completing the re-level and generating a new regression equation, we found in Table 5 and Table 6, the significance level and R squared value minimally changed. Therefore, we reverted to our original regression question using female as the baseline. 
+
+The final step was generating a best fit model using backwards tracing which is shown in table 7. We hypothesized that gender and fiber would be removed from the equation, but after running the multiple linear regression, we found that all predictors were included in the best fit model. Our R-squared and adjusted R-sqaured, which can be seen in Table 7, are interpreted in the first paragraph above. 
+
+
+```{r, echo=FALSE}
+NutritionStudy%>%
+ ggplot(mapping=aes(x=Fiber, y=Cholesterol))+
+   geom_point()+
+   geom_jitter()
+
+
+NutritionStudy%>%
+ ggplot(mapping=aes(x=as.factor(Gender), y=Cholesterol))+
+   geom_point()+
+   geom_jitter()
+
+NutritionStudy%>%
+ ggplot(mapping=aes(x=Calories, y=Cholesterol))+
+   geom_point()+
+   geom_jitter()
+
+ 
+NutritionStudy%>%
+ ggplot(mapping=aes(x=Fat, y=Cholesterol))+
+   geom_point()+
+   geom_jitter()  
+
+NutritionStudy%>%
+ ggplot(mapping=aes(x=as.factor(Gender), y=Cholesterol))+
+   geom_boxplot(mapping=aes(color=as.factor(Gender)))+
+  labs(x="Gender", title="Correlation Between Gender and Cholesterol Levels")+
+  scale_color_discrete(name="Gender")
+  
+   
+
+#NutritionStudy%>%
+ #ggplot(mapping=aes(x=Cholesterol))+
+ #  geom_histogram(mapping=aes(y=..density..),color="blue", #fill="cyan", alpha=.6, binwidth = 30)+
+   #labs(title="Cholesterol Levels for Population in the Nutrition Study", y="Frequency")+
+   #geom_density(color="red", linetype="dashed")
+   
+
+```
+
+Figures 2-6
+
+
+```{r, echo=FALSE}
+nut.fit2 <- lm(formula = Cholesterol~ Calories + Fiber + as.factor(Gender)+Fat, data = NutritionStudy)
+
+nut.fit2 %>%
+  broom::tidy()
+
+```
+Table 3
+```{r, echo=FALSE}
+nut.fit2 %>% 
+ glance() 
+```
+Table 4
+
+```{r, echo=FALSE}
+
+
+nutrition2 <- NutritionStudy %>%
+  mutate(gender_new = relevel(factor(Gender), ref="Male")) 
+glimpse(nutrition2)
+
+nut.fit3 <- lm(formula = Cholesterol~ Calories + Fiber + as.factor(gender_new)+Fat, data = nutrition2)
+
+nut.fit3 %>%
+  broom::tidy()
+
+
+```
+Table 5
+
+```{r, echo=FALSE}
+nut.fit3 %>% 
+ glance() 
+```
+Table 6
+ 
+
+```{r, echo=FALSE}
+Chol.bestfit<-step(object = nut.fit2, direction = "backward", trace = FALSE)
+Chol.bestfit
+
+
+```
+Table 7
+```{r, echo=FALSE}
+Chol.bestfit %>% 
+  glance()
+```
+Table 8
+Cholesterol= 32.934+ 1.950 x Fat + 0.0485 x Calories - 2.6141 x Fiber + 42.726 Gender (Male)
+
+
+#Conclusion 
+
+When adding more predictors into the regression line, our R squared valued increased from 0.504 to 0.531. Therefore, an increase in predictors used provides a more accurate representation of cholesterol level. 
+
+Reflecting back on our methods, the statistical analysis we performed did produce a strong conclusion to our research question and can be considered an appropriate method for this data set. However, we did not use all of the variables listed in the data set and therefore this could have impacted our conclusion of a best fit model. We also determined that other tests such as hypothesis testing and confidence intervals could have been used in order to further our analysis of cholesterol. K-NN could also be considered. The data itself also only considered 350 patients, and a sample size much bigger would yield a much higher accuracy in our data analysis. Additionally, many people's dietary habits have changed over time, and therefore the reliability of this data is subject to scrutiny. As far as our own limitations, we were only provided with the coding knowledge we have been instructed over a short time span. The period time we have had to work on this project also has played a factor. Linear Regression also does not provide a full overview of the impacts of all the variables which supports the idea of using additional methods of statistical analysis stated above. Future questions could include: How does all other variables in the Nutrition Study impact cholesterol? More specifically we could analyze how does smoking and alcohol impact variables such as caloric intake and vitamin use? In general, in any data set we could analyze the correlation between one or several variables using this method of linear regression. Overall, this statistical analysis answered our research question and provided the conlusion that cholesterol is highly correlation by predictors such as fat, calories, fiber, and gender. 
+
+**Sources**|
+---------------|---------------------------
+https://lib.stat.cmu.edu/datasets/Plasma_Retinol
+https://www.geeksforgeeks.org/how-to-change-legend-title-in-r-using-ggplot/, 
+M6ICA2, 
+M6ICA3 
+
+
